@@ -6,8 +6,8 @@ import (
 )
 
 type User struct {
-	Username string   `json:"_id,omitempty" bson:"_id,omitempty"`
-	Password string   `json:"password,omitempty" bson:"password,omitempty"`
+	Username string   `json:"username" bson:"_id,omitempty"`
+	Password string   `json:"-" bson:"password,omitempty"`
 	Roles    []string `json:"roles" bson:"roles"`
 }
 
