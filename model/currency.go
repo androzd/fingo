@@ -1,8 +1,7 @@
 package model
 
 import (
-	"context"
-	"go.mongodb.org/mongo-driver/bson"
+	"upper.io/db.v3"
 )
 
 type Currency struct {
@@ -15,53 +14,43 @@ type CurrencyInterface interface {
 	Find(iso string) (Currency, error)
 }
 
-func (c Currency) table() string {
-	return "currencies"
+func (m Currency) table() db.Collection {
+	return mongoDatabase.Collection("currencies")
 }
 
-func (c Currency) Create() error {
-	_, err := mongoDatabase.Collection(c.table()).InsertOne(modelContext(), c)
+func (m Currency) Create() error {
+	_, err := m.table().Insert(m)
 	return err
 }
 
-func (c Currency) Update() error {
-	filter := bson.D{{"_id", c.Iso}}
-	_, err := mongoDatabase.Collection(c.table()).UpdateOne(modelContext(), filter, c)
+func (m Currency) Update() error {
+	//filter := bson.D{{"_id", c.Iso}}
+	err := m.table().Find(m).Update(m)
 	return err
 }
 
-func (c Currency) Delete() error {
-	filter := bson.D{{"_id", c.Iso}}
-	_, err := mongoDatabase.Collection(c.table()).DeleteOne(modelContext(), filter)
+func (m Currency) Delete() error {
+	//filter := bson.D{{"_id", c.Iso}}
+	err := m.table().Find(m).Delete()
 	return err
 }
 
-func (c Currency) Find(iso string) (currency Currency, error error) {
-	filter := bson.D{{"_id", iso}}
-	error = mongoDatabase.Collection(c.table()).FindOne(modelContext(), filter).Decode(&currency)
+func (m Currency) Find(iso string) (currency Currency, error error) {
+	//filter := bson.D{{"_id", iso}}
+	error = m.table().Find(m).One(&currency)
 
 	return
 }
 
-func (c Currency) All() (currencies []Currency, error error) {
-	filter := bson.D{}
-	cursor, err := mongoDatabase.Collection(c.table()).Find(modelContext(), filter)
+func (m Currency) All() (currencies []Currency, error error) {
+	//filter := bson.D{}
+	//cursor, err := mongoDatabase.Collection(c.table()).Find(modelContext(), filter)
 
+	err := m.table().Find().All(&currencies)
 	if err != nil {
 		error = err
 		panic(err)
 		return
-	}
-
-	for cursor.Next(context.TODO()) {
-		var elem Currency
-		err := cursor.Decode(&elem)
-		if err != nil {
-			error = err
-			panic(err)
-			return
-		}
-		currencies = append(currencies, elem)
 	}
 
 	return

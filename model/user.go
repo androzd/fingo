@@ -1,8 +1,7 @@
 package model
 
 import (
-	"context"
-	"go.mongodb.org/mongo-driver/bson"
+	"upper.io/db.v3"
 )
 
 type User struct {
@@ -17,52 +16,39 @@ type UserInterface interface {
 	GetAccounts() ([]Account, error)
 }
 
-func (u *User) table() string {
-	return "users"
+func (m User) table() db.Collection {
+	return mongoDatabase.Collection("users")
 }
-func (u *User) Create() error {
-	_, err := mongoDatabase.Collection(u.table()).InsertOne(modelContext(), u)
+func (m User) Create() error {
+	_, err := m.table().Insert(m)
 	return err
 }
 
-func (u *User) Update() error {
-	filter := bson.D{{"_id", u.Username}}
-	_, err := mongoDatabase.Collection(u.table()).UpdateOne(modelContext(), filter, u)
+func (m User) Update() error {
+	//filter := bson.D{{"_id", u.Username}}
+	err := m.table().Find(m).Update(m)
 	return err
 }
 
-func (u *User) Delete() error {
-	filter := bson.D{{"_id", u.Username}}
-	_, err := mongoDatabase.Collection(u.table()).DeleteOne(modelContext(), filter)
+func (m User) Delete() error {
+	//filter := bson.D{{"_id", u.Username}}
+	err := m.table().Find(m).Delete()
 	return err
 }
 
-func (u *User) Find(login string) error {
-	filter := bson.D{{"_id", login}}
-	return mongoDatabase.Collection(u.table()).FindOne(modelContext(), filter).Decode(&u)
+func (m *User) Find(login string) error {
+	//filter := bson.D{{"_id", login}}
+	return m.table().Find(m).One(&m)
 }
 
-func (u *User) GetAccounts() (accounts []Account, error error) {
-	filter := bson.D{{"user_id", u.Username}}
-	cursor, err := mongoDatabase.Collection("accounts").Find(modelContext(), filter)
+func (m User) GetAccounts() (accounts []Account, error error) {
+	//filter := bson.D{{"user_id", u.Username}}
+	err := Account{}.table().Find(m).All(&accounts)
 
 	if err != nil {
 		error = err
 		panic(err)
 		return
-	}
-
-	for cursor.Next(context.TODO()) {
-
-		// create a value into which the single document can be decoded
-		var elem Account
-		err := cursor.Decode(&elem)
-		if err != nil {
-			error = err
-			panic(err)
-			return
-		}
-		accounts = append(accounts, elem)
 	}
 
 	return

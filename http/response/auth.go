@@ -1,14 +1,14 @@
 package response
 
-import "github.com/androzd/finance/model"
+import "github.com/androzd/fingo/model"
 
 type UserNotFoundOrPasswordIsWrong struct {
 	ErrorResponse
 }
 
 type UserData struct {
-	User model.User `json:"user"`
-	Token string `json:"token"`
+	User  model.User `json:"user"`
+	Token string     `json:"token"`
 }
 type UserLoggedIn struct {
 	SuccessResponse

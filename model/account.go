@@ -1,9 +1,8 @@
 package model
 
 import (
-	"context"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"upper.io/db.v3"
 )
 
 type Account struct {
@@ -18,51 +17,40 @@ type AccountInterface interface {
 	Currency() (Currency, error)
 }
 
-func (a *Account) table() string {
-	return "accounts"
+func (m Account) table() db.Collection {
+	return mongoDatabase.Collection("accounts")
 }
 
-func (a *Account) Create() error {
-	_, err := mongoDatabase.Collection(a.table()).InsertOne(modelContext(), a)
+func (m Account) Create() error {
+	_, err := m.table().Insert(m)
 	return err
 }
 
-func (a *Account) Update() error {
-	filter := bson.D{{"_id", a.Id}}
-	_, err := mongoDatabase.Collection(a.table()).UpdateOne(modelContext(), filter, a)
+func (m Account) Update() error {
+	//filter := bson.D{{"_id", a.Id}}
+	//id must
+	err := m.table().Find(m).Update(m)
 	return err
 }
 
-func (a *Account) Delete() error {
-	filter := bson.D{{"_id", a.Id}}
-	_, err := mongoDatabase.Collection(a.table()).DeleteOne(modelContext(), filter)
+func (m Account) Delete() error {
+	err := m.table().Find(m).Delete()
 	return err
 }
 
-func (a *Account) Currency() (currency Currency, error error) {
-	currency, error = Currency{}.Find(a.CurrencyId)
+func (m Account) Currency() (currency Currency, error error) {
+	error = Currency{}.table().Find(m.CurrencyId).One(currency)
 	return
 }
 
-func (a Account) All() (accounts []Account, error error) {
-	filter := bson.D{}
-	cursor, err := mongoDatabase.Collection(a.table()).Find(modelContext(), filter)
+func (m Account) All() (accounts []Account, error error) {
+	//filter := bson.D{}
+	err := m.table().Find(m).All(accounts)
 
 	if err != nil {
 		error = err
 		panic(err)
 		return
-	}
-
-	for cursor.Next(context.TODO()) {
-		var elem Account
-		err := cursor.Decode(&elem)
-		if err != nil {
-			error = err
-			panic(err)
-			return
-		}
-		accounts = append(accounts, elem)
 	}
 
 	return

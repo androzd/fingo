@@ -1,43 +1,46 @@
 package model
 
 import (
-	"context"
 	"fmt"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"upper.io/db.v3"
+	"upper.io/db.v3/mongo"
 )
 
-var mongoDatabase *mongo.Database
+var settings = mongo.ConnectionURL{
+	User:     "",
+	Password: "",
+	Host:     "127.0.0.1:27017",
+	Database: "finance",
+	Options:  nil,
+}
+
+var mongoDatabase db.Database
 
 func Initialize() {
 	fmt.Println("Starting connection to mongo")
-	c, err := mongo.NewClient(options.Client().ApplyURI("mongodb://127.0.0.1:27017"))
+	//c, err := mongo.ParseURL("mongodb://localhost:27017")
+	//fmt.Println(c)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//c.Database = "finance"
+	var err error
+	mongoDatabase, err = mongo.Open(settings)
 	if err != nil {
 		log.Fatal(err)
 	}
-	// Create connect
-	err = c.Connect(context.TODO())
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Check the connection
-	err = c.Ping(context.TODO(), nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+
 	fmt.Println("Connected to MongoDB!")
-
-	mongoDatabase = c.Database("finance")
 }
 
-func modelContext() context.Context {
-	return context.TODO()
-}
+//func modelContext() context.Context {
+//	return context.TODO()
+//}
 
 type ModelInterface interface {
 	Create() error
 	Update() error
 	Delete() error
-	table() string
+	table() db.Collection
 }

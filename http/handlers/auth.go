@@ -3,8 +3,8 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/androzd/finance/http/response"
-	"github.com/androzd/finance/model"
+	"github.com/androzd/fingo/http/response"
+	"github.com/androzd/fingo/model"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"

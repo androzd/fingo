@@ -1,7 +1,7 @@
 package route
 
 import (
-	"github.com/androzd/finance/http/handlers"
+	"github.com/androzd/fingo/http/handlers"
 	"github.com/gorilla/mux"
 	"net/http"
 )

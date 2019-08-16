@@ -1,4 +1,4 @@
-module github.com/androzd/finance
+module github.com/androzd/fingo
 
 go 1.12
 
@@ -19,4 +19,6 @@ require (
 	go.mongodb.org/mongo-driver v1.0.4
 	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58 // indirect
+	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce // indirect
+	upper.io/db.v3 v3.6.1+incompatible
 )
